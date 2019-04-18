@@ -562,11 +562,13 @@ class ProjectGeneratorTests: XCTestCase {
                     type: .stickerPack,
                     platform: .iOS,
                     dependencies: [
-                        Dependency(type: .sdk, reference: "NotificationCenter.framework"),
+                        Dependency(type: .sdk(root: nil), reference: "NotificationCenter.framework"),
+                        Dependency(type: .sdk(root: "DEVELOPER_DIR"), reference: "Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework"),
                     ]
                 )
                 expectedResourceFiles[stickerPack.name] = nil
                 expectedLinkedFiles[stickerPack.name] = Set([
+                    "XCTest.framework",
                     "NotificationCenter.framework",
                 ])
 
@@ -598,7 +600,7 @@ class ProjectGeneratorTests: XCTestCase {
                     if let expectedResourceFiles = expectedResourceFiles[target.name] {
                         try expect(resourcesPhases.count) == (expectedResourceFiles.isEmpty ? 0 : 1)
                         if !expectedResourceFiles.isEmpty {
-                            let resourceFiles = resourcesPhases[0].files
+                            let resourceFiles = (resourcesPhases[0].files ?? [])
                                 .compactMap { $0.file }
                                 .map { $0.nameOrPath }
                             try expect(Set(resourceFiles)) == expectedResourceFiles
@@ -611,7 +613,7 @@ class ProjectGeneratorTests: XCTestCase {
                     let expectedLinkedFiles = expectedLinkedFiles[target.name]!
                     try expect(frameworkPhases.count) == (expectedLinkedFiles.isEmpty ? 0 : 1)
                     if !expectedLinkedFiles.isEmpty {
-                        let linkFrameworks = frameworkPhases[0].files
+                        let linkFrameworks = (frameworkPhases[0].files ?? [])
                             .compactMap { $0.file?.nameOrPath }
                         try expect(Set(linkFrameworks)) == expectedLinkedFiles
                     }
@@ -620,7 +622,7 @@ class ProjectGeneratorTests: XCTestCase {
                     if let expectedEmbeddedFrameworks = expectedEmbeddedFrameworks[target.name] {
                         try expect(copyFilesPhases.count) == (expectedEmbeddedFrameworks.isEmpty ? 0 : 1)
                         if !expectedEmbeddedFrameworks.isEmpty {
-                            let copyFiles = copyFilesPhases[0].files
+                            let copyFiles = (copyFilesPhases[0].files ?? [])
                                 .compactMap { $0.file?.nameOrPath }
                             try expect(Set(copyFiles)) == expectedEmbeddedFrameworks
                         }
@@ -871,7 +873,7 @@ class ProjectGeneratorTests: XCTestCase {
                 }
                 let frameworkPhases = nativeTarget.buildPhases.compactMap { $0 as? PBXFrameworksBuildPhase }
 
-                let frameworkBuildFiles = frameworkPhases[0].files
+                let frameworkBuildFiles = frameworkPhases[0].files ?? []
                 let buildFileSettings = frameworkBuildFiles.map { $0.settings }
 
                 try expect(frameworkBuildFiles.count) == 2

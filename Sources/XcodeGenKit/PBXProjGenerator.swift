@@ -420,7 +420,9 @@ public class PBXProjGenerator {
         let targetDependencies = (target.transitivelyLinkDependencies ?? project.options.transitivelyLinkDependencies) ?
             getAllDependenciesPlusTransitiveNeedingEmbedding(target: target) : target.dependencies
 
-        let directlyEmbedCarthage = target.directlyEmbedCarthageDependencies ?? !(target.platform.requiresSimulatorStripping && target.type.isApp)
+        let targetSupportsDirectEmbed = !(target.platform.requiresSimulatorStripping &&
+            (target.type.isApp || target.type == .watch2Extension))
+        let directlyEmbedCarthage = target.directlyEmbedCarthageDependencies ?? targetSupportsDirectEmbed
 
         func getEmbedSettings(dependency: Dependency, codeSign: Bool) -> [String: Any] {
             var embedAttributes: [String] = []
@@ -536,7 +538,7 @@ public class PBXProjGenerator {
                     )
                     copyFrameworksReferences.append(embedFile)
                 }
-            case .sdk:
+            case .sdk(let root):
                 // Static libraries can't link or embed dynamic frameworks
                 guard target.type != .staticLibrary else { break }
 
@@ -555,9 +557,15 @@ public class PBXProjGenerator {
                 if let existingFileReferences = sdkFileReferences[dependency.reference] {
                     fileReference = existingFileReferences
                 } else {
+                    let sourceTree: PBXSourceTree
+                    if let root = root {
+                        sourceTree = .custom(root)
+                    } else {
+                        sourceTree = .sdkRoot
+                    }
                     fileReference = addObject(
                         PBXFileReference(
-                            sourceTree: .sdkRoot,
+                            sourceTree: sourceTree,
                             name: dependencyPath.lastComponent,
                             lastKnownFileType: Xcode.fileType(path: dependencyPath),
                             path: dependencyPath.string
@@ -606,7 +614,7 @@ public class PBXProjGenerator {
         for dependency in carthageDependencies {
             guard target.type != .staticLibrary else { break }
 
-            let embed = dependency.embed ?? target.shouldEmbedDependencies
+            let embed = dependency.embed ?? target.shouldEmbedCarthageDependencies
 
             var platformPath = Path(carthageResolver.buildPath(for: target.platform))
             var frameworkPath = platformPath + dependency.reference
@@ -997,6 +1005,12 @@ extension Target {
 
     var shouldEmbedDependencies: Bool {
         return type.isApp || type.isTest
+    }
+    
+    var shouldEmbedCarthageDependencies: Bool {
+        return (type.isApp && platform != .watchOS)
+            || type == .watch2Extension
+            || type.isTest
     }
 }
 
