@@ -197,7 +197,7 @@ extension TargetSource: JSONEncodable {
         if optional != TargetSource.optionalDefault {
             dict["optional"] = optional
         }
-
+        dict = filterEmpty(value: dict)
         if dict.count == 0 {
             return path
         }
