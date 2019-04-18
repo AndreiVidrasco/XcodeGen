@@ -90,7 +90,6 @@ targets:
         weak: true
       - target: App_watchOS
       - target: iMessageApp
-      - framework: Vendor/SomeFramework.framework
       - sdk: Contacts.framework
     scheme:
       testTargets:
@@ -203,6 +202,16 @@ targets:
       - path: Framework
         excludes:
           - "*.xcodeproj"
+  TestFramework:
+    type: framework
+    platform: iOS
+    sources:
+      - path: Framework
+        excludes:
+          - "*.xcodeproj"
+    depencencies:
+      - sdk: Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework
+        root: DEVELOPER_DIR
 
   App_iOS_Tests:
     type: bundle.unit-test
@@ -210,6 +219,7 @@ targets:
     sources: App_iOS_Tests
     dependencies:
       - target: App_iOS
+      - target: TestFramework
   App_iOS_UITests:
     type: bundle.ui-testing
     platform: iOS

@@ -95,8 +95,8 @@ class SourceGeneratorTests: XCTestCase {
                     .first(where: { $0.file == fileReference }) else {
                     throw failure("Cant find build file")
                 }
-                try expect(buildPhase?.files.count) == 1
-                try expect(buildPhase?.files.contains(buildFile)) == true
+                try expect(buildPhase?.files?.count) == 1
+                try expect(buildPhase?.files?.contains(buildFile)) == true
             }
 
             $0.it("generates core data models") {
@@ -518,7 +518,7 @@ class SourceGeneratorTests: XCTestCase {
 
                 let sourcesBuildPhase = pbxProj.buildPhases.first(where: { $0.buildPhase == BuildPhase.sources })!
 
-                try expect(sourcesBuildPhase.files.count) == 1
+                try expect(sourcesBuildPhase.files?.count) == 1
             }
 
             $0.it("add only carthage dependencies with same platform") {
@@ -589,6 +589,61 @@ class SourceGeneratorTests: XCTestCase {
                     "group2",
                 ]
             }
+
+            $0.it("adds missing optional files and folders") {
+
+                let target = Target(name: "Test", type: .application, platform: .iOS, sources: [
+                    TargetSource(path: "File1.swift", optional: true),
+                    TargetSource(path: "File2.swift", type: .file, optional: true),
+                    TargetSource(path: "Group", type: .folder, optional: true),
+                    ])
+                let project = Project(basePath: directoryPath, name: "Test", targets: [target])
+                let pbxProj = try project.generatePbxProj()
+                try pbxProj.expectFile(paths: ["File1.swift"])
+                try pbxProj.expectFile(paths: ["File2.swift"])
+            }
+
+            $0.it("allows missing optional groups") {
+
+                let target = Target(name: "Test", type: .application, platform: .iOS, sources: [
+                    TargetSource(path: "Group1", optional: true),
+                    TargetSource(path: "Group2", type: .group, optional: true),
+                    TargetSource(path: "Group3", type: .group, optional: true),
+                    ])
+                let project = Project(basePath: directoryPath, name: "Test", targets: [target])
+                _ = try project.generatePbxProj()
+            }
+            
+            $0.it("relative path items outside base path are grouped together") {
+                let directories = """
+                Sources:
+                  - Inside:
+                    - a.swift
+                    - Inside2:
+                        - b.swift
+                """
+                try createDirectories(directories)
+                
+                let outOfSourceFile1 = outOfRootPath + "Outside/a.swift"
+                try outOfSourceFile1.parent().mkpath()
+                try outOfSourceFile1.write("")
+                
+                let outOfSourceFile2 = outOfRootPath + "Outside/Outside2/b.swift"
+                try outOfSourceFile2.parent().mkpath()
+                try outOfSourceFile2.write("")
+                
+                let target = Target(name: "Test", type: .application, platform: .iOS, sources: [
+                    "Sources",
+                    "../OtherDirectory",
+                ])
+                let project = Project(basePath: directoryPath, name: "Test", targets: [target])
+                
+                let pbxProj = try project.generatePbxProj()
+                try pbxProj.expectFile(paths: ["Sources", "Inside", "a.swift"], buildPhase: .sources)
+                try pbxProj.expectFile(paths: ["Sources", "Inside", "Inside2", "b.swift"], buildPhase: .sources)
+                try pbxProj.expectFile(paths: ["../OtherDirectory", "Outside", "a.swift"], names: ["OtherDirectory", "Outside", "a.swift"], buildPhase: .sources)
+                try pbxProj.expectFile(paths: ["../OtherDirectory", "Outside", "Outside2", "b.swift"], names: ["OtherDirectory", "Outside", "Outside2", "b.swift"], buildPhase: .sources)
+            }
         }
     }
 }
@@ -609,7 +664,7 @@ extension PBXProj {
             let buildFile = buildFiles
                 .first(where: { $0.file === fileReference })
             let actualBuildPhase = buildFile
-                .flatMap { buildFile in buildPhases.first { $0.files.contains(buildFile) } }?.buildPhase
+                .flatMap { buildFile in buildPhases.first { $0.files?.contains(buildFile) ?? false } }?.buildPhase
 
             var error: String?
             if let buildPhase = buildPhase.buildPhase {

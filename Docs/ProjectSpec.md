@@ -227,9 +227,10 @@ This will provide default build settings for a certain product type. It can be a
 - `application.messages`
 - `application.watchapp`
 - `application.watchapp2`
+- `app-extension`
 - `app-extension.messages`
 - `app-extension.messages-sticker-pack`
-- `app-extension`
+- `app-extension.intents-service`
 - `bundle`
 - `bundle.unit-test`
 - `bundle.ui-testing`
@@ -242,6 +243,7 @@ This will provide default build settings for a certain product type. It can be a
 - `tv-app-extension`
 - `watchkit-extension`
 - `watchkit2-extension`
+- `xcode-extension`
 - `xpc-service`
 - ``""`` (used for legacy targets)
 
@@ -398,6 +400,23 @@ targets:
         findFrameworks: true
       - sdk: Contacts.framework
       - sdk: libc++.tbd
+  MyFramework:
+    type: framework
+```
+
+**SDK Dependency**
+
+- [ ] **root**: **String** - Root of framework path, for example `DEVELOPER_DIR`. Default value is `BUILT_PRODUCTS_DIR`
+
+```yaml
+targets:
+  MyTestTarget:
+    dependencies:
+      - target: MyFramework
+      - framework: path/to/framework.framework
+      - sdk: Contacts.framework
+      - sdk: Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest
+        root: DEVELOPER_DIR
   MyFramework:
     type: framework
 ```

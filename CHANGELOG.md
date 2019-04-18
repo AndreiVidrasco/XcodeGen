@@ -2,6 +2,35 @@
 
 ## Next Version
 
+## 2.5.0
+
+#### Added
+- Added support for `app-extension.intents-service` target type [#536](https://github.com/yonaskolb/XcodeGen/pull/536) @yonaskolb
+- Added support for custom `root` in `sdk` dependency [#562](https://github.com/yonaskolb/XcodeGen/pull/562) @raptorxcz
+
+#### Changed
+- Updated to xcodeproj 6.7.0 including its performance improvements [#536](https://github.com/yonaskolb/XcodeGen/pull/536) @yonaskolb
+- Updated default generated settings for Xcode 10.2 [#555](https://github.com/yonaskolb/XcodeGen/pull/555) @yonaskolb
+- Changed order of file generation so that plists are now generated before the project, so they will be included in the projects files [#544](https://github.com/yonaskolb/XcodeGen/issues/544) @tomquist
+- Updated Yams to 2.0.0 @yonaskolb
+
+#### Fixed
+- Fixed groups from sources outside a project spec's directory from being flattened. [#550](https://github.com/yonaskolb/XcodeGen/pull/550) @sroebert
+- Fixed `optional` file sources not being added to the project [#557](https://github.com/yonaskolb/XcodeGen/pull/557) @yonaskolb
+- Fixed Carthage dependencies being incorrectly embedded in WatchKit app bundles instead of a WatchKit app extension [#558](https://github.com/yonaskolb/XcodeGen/pull/558) @KhaosT
+
+[Commits](https://github.com/yonaskolb/XcodeGen/compare/2.4.0...2.5.0)
+
+## 2.4.0
+
+#### Fixed:
+- Fixed installation when building in Swift 5 [#549](https://github.com/yonaskolb/XcodeGen/pull/549) @yonaskolb
+
+#### Changed
+- Updated to Swift 5 and dropped Swift 4.2 [#549](https://github.com/yonaskolb/XcodeGen/pull/549) @yonaskolb
+
+[Commits](https://github.com/yonaskolb/XcodeGen/compare/2.3.0...2.4.0)
+
 ## 2.3.0
 
 #### Added
@@ -17,7 +46,7 @@
 
 #### Fixed
 - Sources outside a project spec's directory will be correctly referenced as relative paths in the project file. [#524](https://github.com/yonaskolb/XcodeGen/pull/524)
-- Fixed error when `optional` path is missing [#527](https://github.com/yonaskolb/XcodeGen/pull/527) @yonaskolb
+- Fixed error when `optional` directory source is missing [#527](https://github.com/yonaskolb/XcodeGen/pull/527) @yonaskolb
 - Fixed excludes within included spec [#535](https://github.com/yonaskolb/XcodeGen/pull/535) @yonaskolb
 - Fixed paths in target templates within included files not being relative [#537](https://github.com/yonaskolb/XcodeGen/pull/537) @yonaskolb
 - Fix multi-platform target templates [#541](https://github.com/yonaskolb/XcodeGen/pull/541) @yonaskolb
