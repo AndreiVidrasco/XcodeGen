@@ -103,6 +103,6 @@ extension BuildRule: JSONEncodable {
             dict["script"] = string
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }

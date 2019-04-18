@@ -204,7 +204,7 @@ extension TargetSource: JSONEncodable {
 
         dict["path"] = path
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 
@@ -237,7 +237,7 @@ extension TargetSource.BuildPhase: JSONEncodable {
         case .sources: return "sources"
         case .headers: return "headers"
         case .resources: return "resources"
-        case .copyFiles(let files): return ["copyFiles": files.toJSONValue()]
+        case .copyFiles(let files): return filterEmpty(value: ["copyFiles": files.toJSONValue()])
         case .none: return "none"
         case .frameworks: fatalError("invalid build phase")
         case .runScript: fatalError("invalid build phase")
@@ -257,10 +257,10 @@ extension TargetSource.BuildPhase.CopyFilesSettings: JSONObjectConvertible {
 
 extension TargetSource.BuildPhase.CopyFilesSettings: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "destination": destination.rawValue,
             "subpath": subpath
-        ]
+        ])
     }
 }
 

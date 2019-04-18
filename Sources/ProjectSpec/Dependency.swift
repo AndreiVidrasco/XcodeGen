@@ -116,7 +116,7 @@ extension Dependency: JSONEncodable {
             dict["sdk"] = reference
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 

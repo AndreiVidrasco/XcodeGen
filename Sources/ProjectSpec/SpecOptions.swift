@@ -164,7 +164,7 @@ extension SpecOptions: JSONEncodable {
             dict["findCarthageFrameworks"] = findCarthageFrameworks
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 

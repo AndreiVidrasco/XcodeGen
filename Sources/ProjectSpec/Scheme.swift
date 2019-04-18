@@ -230,11 +230,11 @@ extension Scheme.ExecutionAction: JSONObjectConvertible {
 
 extension Scheme.ExecutionAction: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "script": script,
             "name": name,
             "settingsTarget": settingsTarget
-        ]
+        ])
     }
 }
 
@@ -251,13 +251,13 @@ extension Scheme.Run: JSONObjectConvertible {
 
 extension Scheme.Run: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "commandLineArguments": commandLineArguments,
             "preActions": preActions.map { $0.toJSONValue() },
             "postActions": postActions.map { $0.toJSONValue() },
             "environmentVariables": environmentVariables.map { $0.toJSONValue() },
             "config": config
-        ] as [String: Any?]
+        ] as [String: Any?])
     }
 }
 
@@ -288,7 +288,7 @@ extension Scheme.Test: JSONObjectConvertible {
 
 extension Scheme.Test: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "gatherCoverageData": gatherCoverageData,
             "commandLineArguments": commandLineArguments,
             "targets": targets.map { $0.toJSONValue() },
@@ -296,7 +296,7 @@ extension Scheme.Test: JSONEncodable {
             "postActions": postActions.map { $0.toJSONValue() },
             "environmentVariables": environmentVariables.map { $0.toJSONValue() },
             "config": config
-        ] as [String: Any?]
+        ] as [String: Any?])
     }
 }
 
@@ -326,7 +326,7 @@ extension Scheme.Test.TestTarget: JSONEncodable {
             dict["parallelizable"] = parallelizable
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 
@@ -343,13 +343,13 @@ extension Scheme.Profile: JSONObjectConvertible {
 
 extension Scheme.Profile: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "commandLineArguments": commandLineArguments,
             "preActions": preActions.map { $0.toJSONValue() },
             "postActions": postActions.map { $0.toJSONValue() },
             "environmentVariables": environmentVariables.map { $0.toJSONValue() },
             "config": config
-        ] as [String: Any?]
+        ] as [String: Any?])
     }
 }
 
@@ -362,9 +362,9 @@ extension Scheme.Analyze: JSONObjectConvertible {
 
 extension Scheme.Analyze: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "config": config
-        ]
+        ])
     }
 }
 
@@ -392,7 +392,7 @@ extension Scheme.Archive: JSONEncodable {
             dict["revealArchiveInOrganizer"] = revealArchiveInOrganizer
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 
@@ -411,14 +411,14 @@ extension Scheme: NamedJSONDictionaryConvertible {
 
 extension Scheme: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "build": build.toJSONValue(),
             "run": run?.toJSONValue(),
             "test": test?.toJSONValue(),
             "analyze": analyze?.toJSONValue(),
             "profile": profile?.toJSONValue(),
             "archive": archive?.toJSONValue(),
-        ] as [String: Any?]
+        ] as [String: Any?])
     }
 }
 
@@ -471,7 +471,7 @@ extension Scheme.Build: JSONEncodable {
             dict["buildImplicitDependencies"] = buildImplicitDependencies
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 
@@ -556,6 +556,6 @@ extension XCScheme.EnvironmentVariable: JSONEncodable {
             dict["isEnabled"] = enabled
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }

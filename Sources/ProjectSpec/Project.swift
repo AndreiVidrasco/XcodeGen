@@ -233,7 +233,7 @@ extension BuildSettingsContainer {
 
 extension Project: JSONEncodable {
     public func toJSONValue() -> Any {
-        return toJSONDictionary()
+        return filterEmpty(value: toJSONDictionary())
     }
 
     public func toJSONDictionary() -> JSONDictionary {

@@ -27,10 +27,10 @@ extension Plist: JSONObjectConvertible {
 
 extension Plist: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "path": path,
             "properties": properties
-        ]
+        ])
     }
 }
 

@@ -286,7 +286,7 @@ extension LegacyTarget: JSONEncodable {
             dict["passSettings"] = passSettings
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 
@@ -390,6 +390,6 @@ extension Target: JSONEncodable {
             dict["productName"] = productName
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }

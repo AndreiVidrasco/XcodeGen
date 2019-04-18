@@ -86,7 +86,7 @@ extension BuildScript: JSONEncodable {
             dict["script"] = string
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }
 

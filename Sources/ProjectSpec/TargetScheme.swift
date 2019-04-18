@@ -72,6 +72,6 @@ extension TargetScheme: JSONEncodable {
             dict["gatherCoverageData"] = gatherCoverageData
         }
 
-        return dict
+        return filterEmpty(value: dict)
     }
 }

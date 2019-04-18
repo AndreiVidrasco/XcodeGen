@@ -64,14 +64,14 @@ extension AggregateTarget: NamedJSONDictionaryConvertible {
 
 extension AggregateTarget: JSONEncodable {
     public func toJSONValue() -> Any {
-        return [
+        return filterEmpty(value: [
             "settings": settings.toJSONValue(),
             "targets": targets,
             "configFiles": configFiles,
             "attributes": attributes,
             "buildScripts": buildScripts.map { $0.toJSONValue() },
             "scheme": scheme?.toJSONValue()
-        ] as [String: Any?]
+        ] as [String: Any?])
     }
 }
 
